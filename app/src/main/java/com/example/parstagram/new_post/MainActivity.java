@@ -1,4 +1,4 @@
-package com.example.parstagram;
+package com.example.parstagram.new_post;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,10 +18,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
+import com.example.parstagram.Post;
+import com.example.parstagram.R;
+import com.example.parstagram.feed.FeedActivity;
+import com.example.parstagram.login.LoginActivity;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -30,7 +32,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,8 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         etDescription = findViewById(R.id.etDescription);
         ivPostImage = findViewById(R.id.ivPostImage);
-        
-        //queryPosts();
+
         captureButton();
         submitButton();
         logoutButton();
@@ -197,25 +197,6 @@ public class MainActivity extends AppCompatActivity {
                 etDescription.setText("");
                 ivPostImage.setImageResource(0);
             }
-        });
-    }
-
-
-    private void queryPosts() {
-        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        query.include(Post.KEY_USER);
-        query.findInBackground(new FindCallback<Post>() {
-            @Override
-            public void done(List<Post> posts, ParseException e) {
-                if (e != null){
-                    Log.e(TAG, "issue with getting posts", e);
-                    return;
-                }
-                for (Post post : posts) {
-                    Log.i(TAG, "Post: " + post.getDescription() + ", username: " + post.getUser().getUsername());
-                }
-            }
-
         });
     }
 

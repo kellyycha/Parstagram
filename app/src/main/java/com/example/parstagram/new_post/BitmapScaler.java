@@ -1,4 +1,4 @@
-package com.example.parstagram;
+package com.example.parstagram.new_post;
 
 import android.graphics.Bitmap;
 
