@@ -56,8 +56,7 @@ public class FeedActivity extends AppCompatActivity {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                // fetchTimelineAsync(0);
-                // queryPosts();
+                //fetchTimelineAsync(0);
             }
         });
         // Configure the refreshing colors
@@ -66,8 +65,6 @@ public class FeedActivity extends AppCompatActivity {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
     }
-
-// TODO: pull to refresh
 
 //    public void fetchTimelineAsync(int page) {
 //        // Send the network request to fetch the updated data
