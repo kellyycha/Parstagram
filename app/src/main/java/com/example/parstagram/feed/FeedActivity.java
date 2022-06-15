@@ -34,8 +34,6 @@ public class FeedActivity extends AppCompatActivity {
 
         rvPosts = findViewById(R.id.rvPosts);
 
-        pullToRefresh();
-
         allPosts = new ArrayList<>();
         adapter = new PostsAdapter(this, allPosts);
 
@@ -45,7 +43,7 @@ public class FeedActivity extends AppCompatActivity {
         rvPosts.setLayoutManager(new LinearLayoutManager(this));
         // query posts from Parstagram
         queryPosts();
-
+        pullToRefresh();
     }
 
     private void pullToRefresh() {
