@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView ivPostImage;
     private Button btnSubmit;
     private Button btnLogout;
+    private Button btnFeed;
 
     private File photoFile;
     public String photoFileName = "photo.jpg";
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         captureButton();
         submitButton();
         logoutButton();
+        feedButton();
     }
 
     private void captureButton() {
@@ -237,6 +239,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void goLoginActivity() {
         Intent i = new Intent(this, LoginActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    private void feedButton() {
+        btnFeed = findViewById(R.id.btnFeed);
+        btnFeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG,"onClick feed button");
+                goFeed();
+            }
+        });
+    }
+
+    private void goFeed() {
+        Intent i = new Intent(MainActivity.this, FeedActivity.class);
         startActivity(i);
         finish();
     }
