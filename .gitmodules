@@ -1,0 +1,3 @@
+[submodule "app/src/main/java/com/example/parstagram"]
+	path = app/src/main/java/com/example/parstagram
+	url = https://github.com/kellyycha/Parstagram
