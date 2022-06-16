@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.parstagram.new_post.MainActivity;
+import com.example.parstagram.MainActivity;
 import com.example.parstagram.R;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
