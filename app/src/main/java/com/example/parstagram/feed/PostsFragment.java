@@ -3,7 +3,6 @@ package com.example.parstagram.feed;
 import android.os.Bundle;
 import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -26,13 +25,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.parstagram.feed.EndlessRecyclerViewScrollListener;
-import com.example.parstagram.feed.PostsAdapter;
 
 public class PostsFragment extends Fragment {
 
     public static final String TAG = "PostsFragment";
-    private static final int QUERY_LIMIT = 20;
+    private static final int QUERY_LIMIT = 5;
 
     protected PostsAdapter adapter;
     protected List<Post> allPosts;
@@ -57,8 +54,6 @@ public class PostsFragment extends Fragment {
 
         rvPosts = view.findViewById(R.id.rvPosts);
 
-        infiniteScroll();
-
         allPosts = new ArrayList<>();
         adapter = new PostsAdapter(getContext(), allPosts);
 
@@ -69,6 +64,7 @@ public class PostsFragment extends Fragment {
 
         queryPosts();
         setUpRefreshContainer(view);
+        infiniteScroll();
     }
 
     private void infiniteScroll() {
@@ -80,23 +76,42 @@ public class PostsFragment extends Fragment {
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-                loadNextDataFromApi(page);
+                loadNextPosts();
             }
         };
         // Adds the scroll listener to RecyclerView
         rvPosts.addOnScrollListener(scrollListener);
     }
 
-    //TODO: what to do here...
 
     // Append the next page of data into the adapter
     // This method probably sends out a network request and appends new data items to your adapter.
-    public void loadNextDataFromApi(int offset) {
-        // Send an API request to retrieve appropriate paginated data
-        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
-        //  --> Deserialize and construct new model objects from the API response
-        //  --> Append the new data objects to the existing set of items inside the array of items
-        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+    public void loadNextPosts() {
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+
+        query.include(Post.KEY_USER)
+                .setLimit(QUERY_LIMIT)
+                .addDescendingOrder("createdAt")
+                .whereLessThan("createdAt", allPosts.get(allPosts.size() - 1).getCreatedAt())
+                .findInBackground(new FindCallback<Post>() {
+                    @Override
+                    public void done(List<Post> posts, ParseException e) {
+                        // check for errors
+                        if (e != null) {
+                            Log.e(TAG, "Issue with getting posts", e);
+                            return;
+                        }
+
+                        // for debugging purposes let's print every post description to logcat
+                        for (Post post : posts) {
+                            Log.i(TAG, "Post: " + post.getDescription() + ", username: " + post.getUser().getUsername());
+                        }
+
+                        // save received posts to list and notify adapter of new data
+                        allPosts.addAll(posts);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
     }
 
     private void setUpRefreshContainer(View view) {
