@@ -3,6 +3,7 @@ package com.example.parstagram.feed;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
@@ -15,14 +16,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.parstagram.Post;
 import com.example.parstagram.R;
 import com.parse.ParseFile;
 import org.parceler.Parcels;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +37,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
 
     private Context context;
     private List<Post> posts;
+    // TODO: Fix Like to work through network
     private List<Post> likedPosts = new ArrayList<>();
 
     public PostsAdapter(Context context, List<Post> posts) {
@@ -46,6 +51,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         return new ViewHolder(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Post post = posts.get(position);
@@ -77,19 +83,15 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             itemView.setOnClickListener(this);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.M)
         @SuppressLint("ResourceAsColor")
         public void bind(Post post) {
+
             String username = post.getUser().getUsername();
             String description = post.getDescription();
 
-            int start = 0;
-            int end = 0;
-            for (int i = 0; i < username.length(); i++){
-                end += 1;
-            }
-
             SpannableStringBuilder caption = new SpannableStringBuilder(username + " " + description);
-            caption.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            caption.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             tvDescription.setText(caption);
 
             tvUsername.setText(username);
@@ -100,17 +102,16 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
                 Glide.with(context).load(image.getUrl()).into(ivImage);
             }
 
-            // for now just default
-            Glide.with(context).load(R.drawable.default_pfp).into(ivProfilePic);
+            ParseFile pfp = post.getUser().getParseFile("profilePicture");
+            if (pfp != null) {
+                Glide.with(context).load(pfp.getUrl()).apply(RequestOptions.circleCropTransform()).into(ivProfilePic);
+            }
+            else{
+                // default
+                Glide.with(context).load(R.drawable.default_pfp).apply(RequestOptions.circleCropTransform()).into(ivProfilePic);
+            }
 
             likeButton(post);
-
-            for (Post i : posts) {
-                if (likedPosts.contains(i)){
-                    // TODO: how to change color od heart?
-                    btnHeart.setBackgroundColor(android.R.color.black);
-                }
-            }
         }
 
         private void likeButton(Post post) {
@@ -124,8 +125,14 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         }
 
         private void likePost(Post post) {
-            // TODO: toggle (if in list remove)
-            likedPosts.add(post);
+            if (likedPosts.contains(post)){
+                likedPosts.remove(post);
+                btnHeart.setImageResource(R.drawable.ic_heart);
+            }
+            else{
+                likedPosts.add(post);
+                btnHeart.setImageResource(R.drawable.ic_heart_filled);
+            }
             Log.d(TAG,"Liked Posts:" + likedPosts);
         }
 
@@ -145,8 +152,6 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
             }
         }
     }
-
-
 
 
     // Clean all elements of the recycler

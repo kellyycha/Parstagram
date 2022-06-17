@@ -57,14 +57,8 @@ public class PostDetailActivity extends AppCompatActivity {
         String username = post.getUser().getUsername();
         String description = post.getDescription();
 
-        int start = 0;
-        int end = 0;
-        for (int i = 0; i < username.length(); i++){
-            end += 1;
-        }
-
         SpannableStringBuilder caption = new SpannableStringBuilder(username + " " + description);
-        caption.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        caption.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         tvCaption.setText(caption);
     }
 

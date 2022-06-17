@@ -51,9 +51,10 @@ public class ComposeFragment extends Fragment {
     private Button btnCaptureImage;
     private ImageView ivPostImage;
     private Button btnSubmit;
+    private Button btnProfilePic;
 
     private ProgressBar pbPosting;
-
+    public Bitmap cameraBitmap;
     private File photoFile;
     public String photoFileName = "photo.jpg";
 
@@ -83,7 +84,9 @@ public class ComposeFragment extends Fragment {
 
         captureButton(view);
         submitButton(view);
+        profilePicButton(view);
     }
+
     private void captureButton(View view) {
         btnCaptureImage = view.findViewById(R.id.btnCaptureImage);
         btnCaptureImage.setOnClickListener(new View.OnClickListener() {
@@ -121,6 +124,7 @@ public class ComposeFragment extends Fragment {
             if (resultCode == android.app.Activity.RESULT_OK) {
                 // by this point we have the camera photo on disk
                 Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+                cameraBitmap=takenImage;
                 Bitmap resizedImage = resize(takenImage);
                 // Load the taken image into a preview
                 ivPostImage.setImageBitmap(resizedImage);
@@ -180,6 +184,40 @@ public class ComposeFragment extends Fragment {
         return new File(mediaStorageDir.getPath() + File.separator + fileName);
     }
 
+    private void profilePicButton(View view) {
+        btnProfilePic = view.findViewById(R.id.btnProfilePic);
+        btnProfilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (photoFile == null || ivPostImage.getDrawable() == null) {
+                    Toast.makeText(getContext(), "There is no image", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                ParseUser currentUser = ParseUser.getCurrentUser();
+                setProfilePic(currentUser, photoFile);
+
+            }
+        });
+    }
+
+    private void setProfilePic(ParseUser currentUser, File photoFile) {
+        ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();
+        cameraBitmap.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream);
+        currentUser.put("profilePicture",new ParseFile(byteArrayOutputStream.toByteArray()));
+        currentUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null){
+                    Log.e(TAG, "Error while setting profile picture", e);
+                    Toast.makeText(getContext(), "Error while setting profile picture", Toast.LENGTH_SHORT).show();
+                }
+                Log.i(TAG, "Profile picture save was successful");
+                etDescription.setText("");
+                ivPostImage.setImageResource(0);
+            }
+        });
+    }
+
     private void submitButton(View view) {
         btnSubmit = view.findViewById(R.id.btnSubmit);
         btnSubmit.setOnClickListener(new View.OnClickListener() {
@@ -198,6 +236,25 @@ public class ComposeFragment extends Fragment {
                 savePost(description, currentUser, photoFile);
 
                 new DelayTask().execute(10);
+            }
+        });
+    }
+
+    private void savePost(String description, ParseUser currentUser, File photoFile) {
+        Post post = new Post();
+        post.setDescription(description);
+        post.setImage(new ParseFile(photoFile));
+        post.setUser(currentUser);
+        post.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null){
+                    Log.e(TAG, "Error while saving", e);
+                    Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
+                }
+                Log.i(TAG, "Post save was successful");
+                etDescription.setText("");
+                ivPostImage.setImageResource(0);
             }
         });
     }
@@ -227,25 +284,6 @@ public class ComposeFragment extends Fragment {
         protected void onProgressUpdate(Integer... values) {
             pbPosting.setProgress(values[0]);
         }
-    }
-
-    private void savePost(String description, ParseUser currentUser, File photoFile) {
-        Post post = new Post();
-        post.setDescription(description);
-        post.setImage(new ParseFile(photoFile));
-        post.setUser(currentUser);
-        post.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null){
-                    Log.e(TAG, "Error while saving", e);
-                    Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
-                }
-                Log.i(TAG, "Post save was successful");
-                etDescription.setText("");
-                ivPostImage.setImageResource(0);
-            }
-        });
     }
 
 
