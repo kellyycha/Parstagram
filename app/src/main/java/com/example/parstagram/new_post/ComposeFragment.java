@@ -48,8 +48,6 @@ public class ComposeFragment extends Fragment {
     private Button btnCaptureImage;
     private ImageView ivPostImage;
     private Button btnSubmit;
-    private Button btnLogout;
-    private Button btnFeed;
 
     private File photoFile;
     public String photoFileName = "photo.jpg";
@@ -78,7 +76,6 @@ public class ComposeFragment extends Fragment {
 
         captureButton(view);
         submitButton(view);
-        logoutButton(view);
     }
     private void captureButton(View view) {
         btnCaptureImage = view.findViewById(R.id.btnCaptureImage);
@@ -215,27 +212,5 @@ public class ComposeFragment extends Fragment {
         });
     }
 
-    private void logoutButton(View view) {
-        btnLogout = view.findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG,"onClick logout button");
-                logoutUser();
-            }
-        });
-    }
-
-    private void logoutUser() {
-        Log.i(TAG, "attempting to log out");
-        ParseUser.logOutInBackground();
-        ParseUser currentUser = ParseUser.getCurrentUser(); // this will now be null
-        goLoginActivity();
-    }
-
-    private void goLoginActivity() {
-        Intent i = new Intent(getContext(), LoginActivity.class);
-        startActivity(i);
-    }
 
 }
