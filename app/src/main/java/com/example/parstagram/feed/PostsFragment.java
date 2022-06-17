@@ -29,7 +29,7 @@ import android.view.ViewGroup;
 public class PostsFragment extends Fragment {
 
     public static final String TAG = "PostsFragment";
-    private static final int QUERY_LIMIT = 5;
+    private static final int QUERY_LIMIT = 20;
 
     protected PostsAdapter adapter;
     protected List<Post> allPosts;
