@@ -1,6 +1,8 @@
 package com.example.parstagram.feed;
 
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,7 +29,6 @@ public class PostDetailActivity extends AppCompatActivity {
     private ImageView ivPost;
     private TextView tvCaption;
     private TextView tvTimestamp;
-    private TextView tvUser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,7 +38,6 @@ public class PostDetailActivity extends AppCompatActivity {
         ivPost = findViewById(R.id.ivPost);
         tvCaption = findViewById(R.id.tvCaption);
         tvTimestamp = findViewById(R.id.tvTimestamp);
-        tvUser = findViewById(R.id.tvUser);
 
         post = (Post) Parcels.unwrap(getIntent().getParcelableExtra(Post.class.getSimpleName()));
         Log.d(TAG, String.format("Showing details for '%s'", post.getDescription()));
@@ -53,19 +53,19 @@ public class PostDetailActivity extends AppCompatActivity {
         }
     }
 
-    //TODO: spannable string builder
     private void formatCaption() {
-        String user = post.getUser().getUsername();
-        String caption = post.getDescription();
-        String placeholder = " ";
-        for (int i = 0; i < user.length(); i++){
-            if (user.charAt(i) !=  'i' && user.charAt(i) != 'l'){
-                placeholder += " ";
-            }
-            placeholder += " ";
+        String username = post.getUser().getUsername();
+        String description = post.getDescription();
+
+        int start = 0;
+        int end = 0;
+        for (int i = 0; i < username.length(); i++){
+            end += 1;
         }
-        tvCaption.setText(placeholder + " " + caption);
-        tvUser.setText(user);
+
+        SpannableStringBuilder caption = new SpannableStringBuilder(username + " " + description);
+        caption.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvCaption.setText(caption);
     }
 
 }

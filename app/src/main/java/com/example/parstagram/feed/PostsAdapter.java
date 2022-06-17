@@ -2,6 +2,8 @@ package com.example.parstagram.feed;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,9 +71,20 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.ViewHolder> 
         }
 
         public void bind(Post post) {
-            // Bind the post data to the view elements
-            tvDescription.setText(post.getDescription());
-            tvUsername.setText(post.getUser().getUsername());
+            String username = post.getUser().getUsername();
+            String description = post.getDescription();
+
+            int start = 0;
+            int end = 0;
+            for (int i = 0; i < username.length(); i++){
+                end += 1;
+            }
+
+            SpannableStringBuilder caption = new SpannableStringBuilder(username + " " + description);
+            caption.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            tvDescription.setText(caption);
+
+            tvUsername.setText(username);
             Date createdAt = post.getCreatedAt();
             tvTime.setText(Post.calculateTimeAgo(createdAt));
             ParseFile image = post.getImage();

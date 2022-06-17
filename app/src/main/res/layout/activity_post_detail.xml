@@ -17,14 +17,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
-    <TextView
-        android:id="@+id/tvUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/tvCaption"
-        app:layout_constraintTop_toTopOf="@+id/tvCaption"
-        tools:text="user" />
 
     <TextView
         android:id="@+id/tvCaption"
