@@ -7,12 +7,14 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.parstagram.login.LoginActivity;
 import com.example.parstagram.new_post.ComposeFragment;
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         // Set default selection
         bottomNavView.setSelectedItemId(R.id.action_home);
     }
+
 
 
 }
